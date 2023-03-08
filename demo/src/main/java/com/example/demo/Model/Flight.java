@@ -5,8 +5,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-//@Entity(name = "flight")
-//@Table(name = "flight")
+
 @Entity
 @Table(name = "flight")
 public class Flight{
