@@ -38,7 +38,6 @@ public class FlightsService {
         return false;
     }
 
-
     public List<Flight> getFlights(String departure, String destination){
         List<Flight> lst;
         if (departure != null){

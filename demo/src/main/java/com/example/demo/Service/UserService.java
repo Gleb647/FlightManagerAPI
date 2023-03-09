@@ -44,8 +44,11 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        if (userRepo.findByUsername(user.getUsername()) == null){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepo.save(user);
+        }
+        return null;
     }
 
     public Role saveRole(Role role) {

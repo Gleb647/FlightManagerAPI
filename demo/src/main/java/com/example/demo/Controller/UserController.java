@@ -10,6 +10,7 @@ import com.example.demo.Service.UserService;
 import com.example.demo.Model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -37,16 +38,13 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signUp(@RequestBody User user){
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("signup").toUriString());
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
+    public ResponseEntity signUp(@RequestBody User user){
+        if (userService.saveUser(user) == null){
+            return new ResponseEntity("User with typed username is already exist", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity("User created", HttpStatus.OK);
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<User> signIn(@RequestBody User user){
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("signin").toUriString());
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
-    }
 
     @PostMapping("/role/add")
     public ResponseEntity<Role> addRole(@RequestBody Role role){

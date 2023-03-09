@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name = "flightInfo")
 @Table(name = "flightInfo")
 public class FlightInfoEntity {
     @Id
