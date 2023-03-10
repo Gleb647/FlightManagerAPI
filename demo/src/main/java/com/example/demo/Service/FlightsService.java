@@ -31,10 +31,8 @@ public class FlightsService {
         if (repository.checkIfNodeExist(flight.getDeparture(), flight.getDestination()).isEmpty()){
             checkFlight.setDeparture(flight.getDeparture());
             checkFlight.setDestination(flight.getDestination());
-            //return new ResponseEntity("Flight updated", HttpStatus.OK);
             return true;
         }
-        //return new ResponseEntity("Node is already exist", HttpStatus.CONFLICT);
         return false;
     }
 
