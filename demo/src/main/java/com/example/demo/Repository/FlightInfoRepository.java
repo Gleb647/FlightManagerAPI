@@ -12,6 +12,7 @@ import java.util.List;
 
 
 public interface FlightInfoRepository extends JpaRepository<FlightInfoEntity, Long> {
+
     @Query(
         value = "SELECT * FROM flight_info u WHERE u.flight_id = :id",
         nativeQuery = true)
