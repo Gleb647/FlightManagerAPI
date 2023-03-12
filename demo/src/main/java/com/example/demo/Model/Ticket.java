@@ -1,13 +1,9 @@
 package com.example.demo.Model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "ticket")
@@ -30,7 +26,6 @@ public class Ticket {
     private LocalDateTime buyingDate;
 
     public Ticket(User user, FlightInfoEntity flight) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.user = user;
         this.flight = flight;
         this.buyingDate = LocalDateTime.now();

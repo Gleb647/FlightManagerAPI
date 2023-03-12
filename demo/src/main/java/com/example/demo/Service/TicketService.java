@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import com.example.demo.EmailDetails.EmailDetails;
+import com.example.demo.Model.FlightInfoEntity;
 import com.example.demo.Model.Ticket;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.FlightInfoRepository;
@@ -25,12 +26,18 @@ public class TicketService {
 
     public void buyTicket(Long id, String username){
         User user = user_service.getUser(username);
-        Ticket ticket = new Ticket(user, flight_repo.findById(id).get());
+        String name =user.getName();
+        FlightInfoEntity flight = flight_repo.findById(id).get();
+        Ticket ticket = new Ticket(user, flight);
         ticket_repo.save(ticket);
         EmailDetails details = new EmailDetails(
-                "glebtkach647@gmail.com",
-                "Checking email service.",
-                "Simple Email Message",
+                "glebtkach@rambler.ru",
+                "Dear "+ name,
+                "Info about flight:\n"+
+                        flight.getDate()+"\n"+
+                        flight.getCarrier()+"\n"+
+                        flight.getCost()+"\n"+
+                        flight.getFlightDuration()+"\n",
                 null);
         email_service.sendSimpleMail(details);
     }
