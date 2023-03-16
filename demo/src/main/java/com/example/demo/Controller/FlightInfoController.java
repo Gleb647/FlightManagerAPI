@@ -25,7 +25,7 @@ public class FlightInfoController {
     FlightInfoService service;
 
     @PostMapping("/flightinfo/{id}")
-    public ResponseEntity addUserInfo(@PathVariable("id") Long id, @RequestBody FlightInfoEntity flightInfo){
+    public ResponseEntity addFlightInfo(@PathVariable("id") Long id, @RequestBody FlightInfoEntity flightInfo){
         try{
             flights_rep.findById(id).get().increaseFlightsAvailableCount();
             return new ResponseEntity(service.addFlightInfo(flightInfo, id), HttpStatus.CREATED);
@@ -36,7 +36,7 @@ public class FlightInfoController {
     }
 
     @GetMapping("/flightinfo/get/{id}")
-    public ResponseEntity getUserInfo(@PathVariable("id") Long id){
+    public ResponseEntity getFlightInfo(@PathVariable("id") Long id){
         try{
             service.checkIfFlightNotExpired(id);
             List<FlightInfoEntity> lst = service.findAllExpNotes(id);

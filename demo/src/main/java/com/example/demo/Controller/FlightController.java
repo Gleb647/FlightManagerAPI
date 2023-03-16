@@ -14,7 +14,7 @@ public class FlightController {
     private FlightsService service;
 
     @PostMapping("/flights/add")
-    public ResponseEntity addUser(@RequestBody Flight flight) {
+    public ResponseEntity addFlight(@RequestBody Flight flight) {
         if (service.saveFlight(flight)){
             return new ResponseEntity("New node added", HttpStatus.CREATED);
         }
@@ -22,18 +22,18 @@ public class FlightController {
     }
 
     @GetMapping("/flights/get")
-    public ResponseEntity getUsers(@RequestParam(name = "departure", required = false) String departure,
+    public ResponseEntity getFlights(@RequestParam(name = "departure", required = false) String departure,
                                    @RequestParam(name = "destination", required = false) String destination){
         return new ResponseEntity(service.getFlights(departure, destination), HttpStatus.OK);
     }
 
     @DeleteMapping("/flights/delete/{id}")
-    public void deleteUser(@PathVariable("id") Long id){
+    public void deleteFlight(@PathVariable("id") Long id){
         service.deleteFlight(id);
     }
 
     @PutMapping("/flights/change/{id}")
-    public ResponseEntity updateUser(@PathVariable("id") Long id, @RequestBody Flight flight){
+    public ResponseEntity updateFlight(@PathVariable("id") Long id, @RequestBody Flight flight){
         if (service.updateFlight(id, flight)){
             return new ResponseEntity("Node updated", HttpStatus.OK);
         }
