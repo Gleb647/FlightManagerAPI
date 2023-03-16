@@ -47,7 +47,6 @@ public class TicketService {
                         "Cost: "+flightinfo.getCost()+"$\n"+
                         "Flight duration: "+flightinfo.getFlightDuration()+"h\n",
                 "Dear "+ name,
-
                 null);
         email_service.sendSimpleMail(details);
     }

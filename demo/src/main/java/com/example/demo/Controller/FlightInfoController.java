@@ -38,6 +38,7 @@ public class FlightInfoController {
     @GetMapping("/flightinfo/get/{id}")
     public ResponseEntity getUserInfo(@PathVariable("id") Long id){
         try{
+            service.checkIfFlightNotExpired(id);
             List<FlightInfoEntity> lst = service.findAllExpNotes(id);
             return new ResponseEntity(lst, HttpStatus.OK);
         }

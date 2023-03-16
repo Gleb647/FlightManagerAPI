@@ -74,6 +74,14 @@ public class Flight{
     public void setFlightsAvailable(Integer flightsAvailable) {
         this.flightsAvailable = flightsAvailable;
     }
+//
+//    public List<FlightInfoEntity> getInfo() {
+//        return info;
+//    }
+//
+//    public void setInfo(List<FlightInfoEntity> info) {
+//        this.info = info;
+//    }
 
     public synchronized void increaseFlightsAvailableCount(){
         this.flightsAvailable++;

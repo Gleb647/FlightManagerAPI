@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.Model.FlightInfoEntity;
 import com.example.demo.Repository.FlightInfoRepository;
 import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Model.Flight;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,6 +40,10 @@ public class FlightsService {
 
     public List<Flight> getFlights(String departure, String destination){
         List<Flight> lst;
+        lst = repository.getAllFlightsOrderedById();
+        for (Flight fl : lst){
+            checkIfFlightInfosNotExpired(fl);
+        }
         if (departure != null){
             lst = repository.findByDepartureLike(departure);
         }
@@ -45,10 +51,19 @@ public class FlightsService {
             lst = repository.findByDestinationLike(destination);
         }
         else {
-            HashMap<String, Integer> response = new HashMap<>();
             lst = repository.getAllFlightsOrderedById();
         }
         return lst;
+    }
+
+    public void checkIfFlightInfosNotExpired(Flight fl){
+        List<FlightInfoEntity> info = flight_info_rep.findAllExpNotes(fl.getId());
+        for (FlightInfoEntity item : info){
+            if (LocalDateTime.now().isAfter(item.getDate())){
+                repository.findById(item.getFlight().getId()).get().decreaseFlightsAvailableCount();
+                flight_info_rep.deleteById(item.getId());
+            }
+        }
     }
 
     public Boolean saveFlight(Flight flight){

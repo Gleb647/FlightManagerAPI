@@ -2,6 +2,7 @@ package com.example.demo.Security;
 
 import com.example.demo.Filter.CustomAuthenticationFilter;
 import com.example.demo.Filter.CustomAuthorizationFilter;
+import com.example.demo.Filter.SimpleCORSFilter;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/flights/get").permitAll();
         http.authorizeRequests().antMatchers("/flightinfo/get/**").permitAll();
         http.authorizeRequests().antMatchers("/flightinfo/**").permitAll();
-        http.authorizeRequests().antMatchers( "/buy-ticket/{id}").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/buy-ticket/**").hasAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(POST, "/flights/add/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(DELETE, "/flights/delete/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(PUT, "/flights/change/**").hasAuthority("ROLE_ADMIN");
