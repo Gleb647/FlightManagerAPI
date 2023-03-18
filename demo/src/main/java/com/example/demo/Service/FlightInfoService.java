@@ -18,9 +18,6 @@ public class FlightInfoService {
     @Autowired
     private FlightsRepository flightRepo;
 
-    @Autowired
-    private FlightsService flightsService;
-
     public FlightInfoEntity addFlightInfo(FlightInfoEntity flightInfo, Long id){
         Flight flight = flightRepo.findById(id).get();
         flightInfo.setFlight(flight);
@@ -33,6 +30,35 @@ public class FlightInfoService {
             flightRepo.findById(flightInfo.getFlight().getId()).get().decreaseFlightsAvailableCount();
             flightInfoRepo.deleteById(id);
         }
+    }
+
+    public List<FlightInfoEntity> findFlightInfoBetween(Long id, String min, String max){
+        List<FlightInfoEntity> lst;
+        if (min != null && max != null){
+            lst = flightInfoRepo.findAllFlightsBetween(id, Integer.parseInt(min), Integer.parseInt(max));
+        }
+        else if (min != null){
+            lst = flightInfoRepo.findAllFlightsAbove(id, Integer.parseInt(min));
+        }
+        else {
+            lst =  flightInfoRepo.findAllFlightsBelow(id, Integer.parseInt(max));
+        }
+        return lst;
+    }
+
+    public boolean updateFlight(Long id, FlightInfoEntity info){
+        FlightInfoEntity checkFlight = flightInfoRepo.findById(id).orElseThrow(() ->
+                new IllegalStateException("Flightinfo with id " + id + " doesn't exist"));
+        if (flightInfoRepo.checkIfNodeExist(info.getCarrier(), info.getFlightDuration(),
+                checkFlight.getCost(), info.getDate()).isEmpty()){
+            checkFlight.setCarrier(info.getCarrier());
+            checkFlight.setFlightDuration(info.getFlightDuration());
+            checkFlight.setCost(info.getCost());
+            checkFlight.setDate(info.getDate());
+            flightInfoRepo.save(checkFlight);
+            return true;
+        }
+        return false;
     }
 
     public List<FlightInfoEntity> findAllExpNotes(Long id){

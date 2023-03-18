@@ -20,7 +20,7 @@ public class FlightInfoEntity {
     @Column(name = "carrier", nullable = false, columnDefinition = "TEXT")
     private String carrier;
 
-    @Column(name = "flightDuration", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "flightDuration", nullable = false, columnDefinition = "INTEGER")
     private Integer flightDuration;
 
     @Column(name = "cost", nullable = false, columnDefinition = "INTEGER")

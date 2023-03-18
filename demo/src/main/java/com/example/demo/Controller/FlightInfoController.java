@@ -38,34 +38,40 @@ public class FlightInfoController {
     @GetMapping("/flightinfo/get/{id}")
     public ResponseEntity getFlightInfo(@PathVariable("id") Long id){
         try{
-            service.checkIfFlightNotExpired(id);
             List<FlightInfoEntity> lst = service.findAllExpNotes(id);
-            return new ResponseEntity(lst, HttpStatus.OK);
+            for (FlightInfoEntity node : lst){
+                service.checkIfFlightNotExpired(node.getId());
+            }
+            return new ResponseEntity(service.findAllExpNotes(id), HttpStatus.OK);
         }
         catch (Exception e){
             return new ResponseEntity("Invalid data provided", HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("flightinfo/get-flight-info-between/{id}")
+    @GetMapping("/flightinfo/get-flight-info-between/{id}")
     public ResponseEntity getFlightBetween(@PathVariable("id") Long id,
                                            @RequestParam(name = "min", required = false) String min,
                                            @RequestParam(name = "max", required = false) String max){
         try{
-            List<FlightInfoEntity> lst;
-            if (min != null && max != null){
-                lst = repository.findAllFlightsBetween(id, Integer.parseInt(min), Integer.parseInt(max));
-            }
-            else if (min != null){
-                lst = repository.findAllFlightsAbove(id, Integer.parseInt(min));
-            }
-            else {
-                lst =  repository.findAllFlightsBelow(id, Integer.parseInt(max));
-            }
-            return new ResponseEntity(lst, HttpStatus.OK);
+            return new ResponseEntity(service.findFlightInfoBetween(id, min, max), HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity("Invalid data provided", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @DeleteMapping("/flightinfo/delete/{id}")
+    public void deleteFlightInfo(@PathVariable("id") Long id){
+        flights_rep.findById(repository.findById(id).get().getFlight().getId()).get().decreaseFlightsAvailableCount();
+        repository.deleteById(id);
+    }
+
+    @PutMapping("/flightinfo/change/{id}")
+    public ResponseEntity updateFlightInfo(@PathVariable("id") Long id, @RequestBody FlightInfoEntity info){
+        if (service.updateFlight(id, info)){
+            return new ResponseEntity("Node updated", HttpStatus.OK);
+        }
+        return new ResponseEntity("Such node is already exist", HttpStatus.CONFLICT);
     }
 }

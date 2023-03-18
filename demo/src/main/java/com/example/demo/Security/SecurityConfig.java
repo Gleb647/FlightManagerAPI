@@ -56,11 +56,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/signup").permitAll();
         http.authorizeRequests().antMatchers("/flights/get").permitAll();
         http.authorizeRequests().antMatchers("/flightinfo/get/**").permitAll();
-        http.authorizeRequests().antMatchers("/flightinfo/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/buy-ticket/**").hasAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(POST, "/flights/add/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(DELETE, "/flights/delete/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/flights/delete/**").hasAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/flightinfo/delete/**").hasAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(PUT, "/flights/change/**").hasAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/flightinfo/change/**").hasAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin().permitAll();
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), userService));
