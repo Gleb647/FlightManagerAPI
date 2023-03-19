@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "flightInfo")
@@ -96,5 +97,29 @@ public class FlightInfoEntity {
 
     public void setDate(LocalDateTime utilDate) {
         this.date = utilDate;
+    }
+
+    @Override
+    public String toString() {
+        return "FlightInfoEntity{" +
+                "id=" + id +
+                ", carrier='" + carrier + '\'' +
+                ", flightDuration=" + flightDuration +
+                ", cost=" + cost +
+                ", date=" + date +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FlightInfoEntity that = (FlightInfoEntity) o;
+        return Objects.equals(carrier, that.carrier) && Objects.equals(flightDuration, that.flightDuration) && Objects.equals(cost, that.cost) && Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(carrier, flightDuration, cost, date);
     }
 }

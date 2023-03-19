@@ -17,9 +17,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,12 +34,10 @@ class FlightControllerTest {
     @MockBean
     private FlightsService base_serv;
 
-
     @Test
-    void addNewUser() throws Exception {
+    void addNewFlight() throws Exception {
         Flight fl = new Flight(null,"minsk", "krakow");
         when(base_serv.saveFlight(fl)).thenReturn(true);
-        System.out.println("LINE "+ asJsonString(fl));
         mvc.perform(MockMvcRequestBuilders
                         .post("/flights/add")
                         .content(("""
@@ -56,10 +52,9 @@ class FlightControllerTest {
     }
 
     @Test
-    void addExistingUser() throws Exception {
+    void addExistingFlight() throws Exception {
         Flight fl = new Flight(null,"minsk", "krakow");
         when(base_serv.saveFlight(fl)).thenReturn(false);
-        System.out.println("LINE "+ asJsonString(fl));
         mvc.perform(MockMvcRequestBuilders
                         .post("/flights/add")
                         .content(("""
@@ -74,7 +69,7 @@ class FlightControllerTest {
     }
 
     @Test
-    void getUsersWithoutParams() throws Exception {
+    void getFlightsWithoutParams() throws Exception {
         Flight fl1 = new Flight("minsk", "istanbul");
         Flight fl2 = new Flight("dublin", "paris");
         when(base_serv.getFlights(null, null)).thenReturn(Arrays.asList(fl1, fl2));
@@ -91,7 +86,7 @@ class FlightControllerTest {
     }
 
     @Test
-    void getUsersWithParams() throws Exception{
+    void getFlightsWithParams() throws Exception{
         Flight fl1 = new Flight("minsk", "istanbul");
         when(base_serv.getFlights("minsk", null)).thenReturn(Arrays.asList(fl1));
 
@@ -106,9 +101,8 @@ class FlightControllerTest {
     }
 
     @Test
-    void updateUser() throws Exception {
+    void updateFlight() throws Exception {
         Flight fl1 = new Flight(1L,"minsk", "istanbul");
-        System.out.println("LINE "+ asJsonString(fl1));
         when(base_serv.updateFlight(1L, fl1)).thenReturn(true);
         mvc.perform(MockMvcRequestBuilders
                         .put("/flights/change/1")

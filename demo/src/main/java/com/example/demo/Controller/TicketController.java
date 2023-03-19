@@ -20,7 +20,9 @@ public class TicketController {
     @GetMapping("/buy-ticket/{id}")
     public ResponseEntity buyTicket(@PathVariable("id") Long id,
                           @RequestParam(name = "username", required = false) String username){
-        ticket_service.buyTicket(id, username);
-        return new ResponseEntity("Ticket bought", HttpStatus.OK);
+        if (ticket_service.buyTicket(id, username)) {
+            return new ResponseEntity("Ticket bought", HttpStatus.OK);
+        }
+        return new ResponseEntity("Error while buying ticket", HttpStatus.BAD_REQUEST);
     }
 }

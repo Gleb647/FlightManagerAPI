@@ -19,6 +19,7 @@ public class FlightInfoService {
     private FlightsRepository flightRepo;
 
     public FlightInfoEntity addFlightInfo(FlightInfoEntity flightInfo, Long id){
+        flightRepo.findById(id).get().increaseFlightsAvailableCount();
         Flight flight = flightRepo.findById(id).get();
         flightInfo.setFlight(flight);
         return flightInfoRepo.save(flightInfo);
@@ -63,5 +64,10 @@ public class FlightInfoService {
 
     public List<FlightInfoEntity> findAllExpNotes(Long id){
         return flightInfoRepo.findAllExpNotes(id);
+    }
+
+    public void deleteFlightInfo(Long id){
+        flightRepo.findById(flightInfoRepo.findById(id).get().getFlight().getId()).get().decreaseFlightsAvailableCount();
+        flightInfoRepo.deleteById(id);
     }
 }

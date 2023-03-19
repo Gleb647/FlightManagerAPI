@@ -29,7 +29,7 @@ public class TicketService {
     @Autowired
     public EmailService email_service;
 
-    public void buyTicket(Long id, String username){
+    public boolean buyTicket(Long id, String username){
         User user = user_service.getUser(username);
         String name = user.getName();
         FlightInfoEntity flightinfo = flight_info_repo.findById(id).get();
@@ -48,6 +48,6 @@ public class TicketService {
                         "Flight duration: "+flightinfo.getFlightDuration()+"h\n",
                 "Dear "+ name,
                 null);
-        email_service.sendSimpleMail(details);
+        return email_service.sendSimpleMail(details);
     }
 }

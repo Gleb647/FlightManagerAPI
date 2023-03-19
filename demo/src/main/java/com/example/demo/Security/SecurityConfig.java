@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/users/add", "/token/refresh").permitAll();
         http.authorizeRequests().antMatchers("/role/add").permitAll();
-        http.authorizeRequests().antMatchers("/get-flight-info-between").permitAll();
+        http.authorizeRequests().antMatchers("/flightinfo/get-flight-info-between/**").permitAll();
         http.authorizeRequests().antMatchers("/role/addtouser").permitAll();
         http.authorizeRequests().antMatchers("/login").permitAll();
         http.authorizeRequests().antMatchers("/signup").permitAll();

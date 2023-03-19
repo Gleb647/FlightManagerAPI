@@ -46,6 +46,7 @@ public interface FlightInfoRepository extends JpaRepository<FlightInfoEntity, Lo
             value = "SELECT * FROM flight_info f WHERE f.carrier = :carrier AND f.flight_duration = :flightDuration " +
                     "AND f.cost = :cost AND f.date = :date",
             nativeQuery = true)
-    List<Flight> checkIfNodeExist(@Param("carrier") String carrier, @Param("flightDuration") Integer flightDuration,
-                                  @Param("cost") Integer cost, @Param("date") LocalDateTime date);
+    List<FlightInfoEntity> checkIfNodeExist(
+            @Param("carrier") String carrier, @Param("flightDuration") Integer flightDuration,
+            @Param("cost") Integer cost, @Param("date") LocalDateTime date);
 }

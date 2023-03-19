@@ -1,5 +1,7 @@
 package com.example.demo.Model;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -7,6 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "flight")
+@Transactional
 public class Flight{
     @Id
     @SequenceGenerator(name = "flight_sequence", sequenceName = "flight_sequence", allocationSize = 1)
@@ -99,11 +102,11 @@ public class Flight{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Flight flight = (Flight) o;
-        return Objects.equals(id, flight.id) && Objects.equals(departure, flight.departure) && Objects.equals(destination, flight.destination) && Objects.equals(flightsAvailable, flight.flightsAvailable) && Objects.equals(info, flight.info);
+        return Objects.equals(id, flight.id) && Objects.equals(departure, flight.departure) && Objects.equals(destination, flight.destination) && Objects.equals(flightsAvailable, flight.flightsAvailable);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, departure, destination, flightsAvailable, info);
+        return Objects.hash(id, departure, destination, flightsAvailable);
     }
 }

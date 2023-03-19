@@ -22,7 +22,7 @@ public class EmailService {
     private String sender;
 
 
-    public String sendSimpleMail(EmailDetails details) {
+    public boolean sendSimpleMail(EmailDetails details) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
@@ -32,10 +32,10 @@ public class EmailService {
             mailMessage.setSubject(details.getSubject());
 
             javaMailSender.send(mailMessage);
-            return "Mail Sent Successfully...";
+            return true;
         }
         catch (Exception e) {
-            return "Error while Sending Mail";
+            return false;
         }
     }
 

@@ -15,38 +15,25 @@ import java.util.List;
 @CrossOrigin("*")
 @RestController
 public class FlightInfoController {
-    @Autowired
-    FlightInfoRepository repository;
-
-    @Autowired
-    FlightsRepository flights_rep;
 
     @Autowired
     FlightInfoService service;
 
     @PostMapping("/flightinfo/{id}")
     public ResponseEntity addFlightInfo(@PathVariable("id") Long id, @RequestBody FlightInfoEntity flightInfo){
-        try{
-            flights_rep.findById(id).get().increaseFlightsAvailableCount();
-            return new ResponseEntity(service.addFlightInfo(flightInfo, id), HttpStatus.CREATED);
+        if (service.addFlightInfo(flightInfo, id) != null){
+            return new ResponseEntity("New node added", HttpStatus.CREATED);
         }
-        catch (Exception e){
-            return new ResponseEntity("Invalid data provided", HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity("Invalid data provided", HttpStatus.CONFLICT);
     }
 
     @GetMapping("/flightinfo/get/{id}")
     public ResponseEntity getFlightInfo(@PathVariable("id") Long id){
-        try{
-            List<FlightInfoEntity> lst = service.findAllExpNotes(id);
-            for (FlightInfoEntity node : lst){
-                service.checkIfFlightNotExpired(node.getId());
-            }
-            return new ResponseEntity(service.findAllExpNotes(id), HttpStatus.OK);
+        List<FlightInfoEntity> lst = service.findAllExpNotes(id);
+        for (FlightInfoEntity node : lst){
+            service.checkIfFlightNotExpired(node.getId());
         }
-        catch (Exception e){
-            return new ResponseEntity("Invalid data provided", HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity(service.findAllExpNotes(id), HttpStatus.OK);
     }
 
     @GetMapping("/flightinfo/get-flight-info-between/{id}")
@@ -63,8 +50,7 @@ public class FlightInfoController {
 
     @DeleteMapping("/flightinfo/delete/{id}")
     public void deleteFlightInfo(@PathVariable("id") Long id){
-        flights_rep.findById(repository.findById(id).get().getFlight().getId()).get().decreaseFlightsAvailableCount();
-        repository.deleteById(id);
+        service.deleteFlightInfo(id);
     }
 
     @PutMapping("/flightinfo/change/{id}")
