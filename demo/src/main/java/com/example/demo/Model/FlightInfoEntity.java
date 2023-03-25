@@ -9,6 +9,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "flightInfo")
 public class FlightInfoEntity {
@@ -35,18 +38,6 @@ public class FlightInfoEntity {
     @JoinColumn(name = "flight_id")
     private Flight fl;
 
-    public FlightInfoEntity(){
-
-    }
-
-    public FlightInfoEntity(Long id, String carrier, Integer flightDuration, Integer cost, LocalDateTime utilDate, Flight fl) {
-        this.id = id;
-        this.carrier = carrier;
-        this.flightDuration = flightDuration;
-        this.cost = cost;
-        this.date = utilDate;
-    }
-
     public FlightInfoEntity(String carrier, Integer flightDuration, Integer cost, LocalDateTime date, Flight fl) {
         this.carrier = carrier;
         this.flightDuration = flightDuration;
@@ -55,48 +46,12 @@ public class FlightInfoEntity {
         this.fl = fl;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCarrier() {
-        return carrier;
-    }
-
-    public void setCarrier(String carrier) {
-        this.carrier = carrier;
-    }
-
-    public Integer getFlightDuration() {
-        return flightDuration;
-    }
-
-    public void setFlightDuration(Integer flightDuration) {
-        this.flightDuration = flightDuration;
-    }
-
-    public Integer getCost() { return cost; }
-
-    public void setCost(Integer cost) { this.cost = cost; }
-
     public Flight getFlight() {
         return fl;
     }
-
+//
     public void setFlight(Flight flight) {
         this.fl = flight;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime utilDate) {
-        this.date = utilDate;
     }
 
     @Override

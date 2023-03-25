@@ -36,7 +36,7 @@ class FlightControllerTest {
 
     @Test
     void addNewFlight() throws Exception {
-        Flight fl = new Flight(null,"minsk", "krakow");
+        Flight fl = new Flight("minsk", "krakow");
         when(base_serv.saveFlight(fl)).thenReturn(true);
         mvc.perform(MockMvcRequestBuilders
                         .post("/flights/add")
@@ -53,7 +53,7 @@ class FlightControllerTest {
 
     @Test
     void addExistingFlight() throws Exception {
-        Flight fl = new Flight(null,"minsk", "krakow");
+        Flight fl = new Flight("minsk", "krakow");
         when(base_serv.saveFlight(fl)).thenReturn(false);
         mvc.perform(MockMvcRequestBuilders
                         .post("/flights/add")
