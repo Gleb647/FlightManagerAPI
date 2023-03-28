@@ -3,6 +3,7 @@ package com.example.demo.Model;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.List;
@@ -32,18 +33,23 @@ public class Flight{
     @Column(name = "destination", nullable = false, columnDefinition = "TEXT")
     private String destination;
 
+    @Column(name = "image", columnDefinition = "TEXT")
+    private String filePath;
+
     @Column(name = "flights_available")
     private Integer flightsAvailable = 0;
 
-    public Flight(String from, String to) {
+    public Flight(String from, String to, String filePath) {
         this.departure = from;
         this.destination = to;
+        this.filePath = filePath;
     }
 
-    public Flight(long l, String from, String to) {
+    public Flight(long l, String from, String to, String filePath) {
         this.id = l;
         this.departure = from;
         this.destination = to;
+        this.filePath = filePath;
     }
 
     public synchronized void increaseFlightsAvailableCount(){

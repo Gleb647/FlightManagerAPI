@@ -10,6 +10,7 @@ import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Repository.TicketRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -29,6 +30,7 @@ public class TicketService {
     @Autowired
     public EmailService email_service;
 
+    @Transactional
     public boolean buyTicket(Long id, String username){
         User user = user_service.getUser(username);
         String name = user.getName();
