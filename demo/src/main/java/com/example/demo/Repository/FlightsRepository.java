@@ -10,7 +10,15 @@ import java.util.List;
 
 @Transactional
 public interface FlightsRepository extends JpaRepository<Flight, Long> {
-    List<Flight> findByDepartureLike(String departure);
+    @Query(
+            value = "SELECT * FROM flight f WHERE f.departure LIKE :departure% ORDER BY f.id",
+            nativeQuery = true
+    )
+    List<Flight> findByDepartureLike(@Param("departure") String departure);
+    @Query(
+            value = "SELECT * FROM flight f WHERE f.destination LIKE :destination% ORDER BY f.id",
+            nativeQuery = true
+    )
     List<Flight> findByDestinationLike(String destination);
 
     @Query(
@@ -20,7 +28,11 @@ public interface FlightsRepository extends JpaRepository<Flight, Long> {
     List<Flight> getAllFlightsOrderedById();
 
     @Query(
-            value = "SELECT * FROM flight f WHERE f.departure = :departure AND f.destination = :destination",
+            value = "SELECT * FROM flight f WHERE f.departure = :departure AND " +
+                    "f.destination = :destination AND f.image = :image",
             nativeQuery = true)
-    List<Flight> checkIfNodeExist(@Param("departure") String departure, @Param("destination") String destination);
+    List<Flight> checkIfNodeExist(
+            @Param("departure") String departure,
+            @Param("destination") String destination,
+            @Param("image") String image);
 }

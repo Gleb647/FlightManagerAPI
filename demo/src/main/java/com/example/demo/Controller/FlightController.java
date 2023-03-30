@@ -11,16 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -37,11 +28,7 @@ public class FlightController {
     public ResponseEntity addFlight(@RequestParam("file") MultipartFile file,
                                     @RequestParam("departure") String departure,
                                     @RequestParam("destination") String destination) throws IOException {
-        StringBuilder fileNames = new StringBuilder();
-        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
-        fileNames.append(file.getOriginalFilename());
-        Files.write(fileNameAndPath, file.getBytes());
-        if (service.saveFlight(new Flight(departure, destination, file.getOriginalFilename()))){
+        if (service.saveFlight(departure, destination, file)){
             return new ResponseEntity("New node added", HttpStatus.CREATED);
         }
         return new ResponseEntity("Such node is already exist", HttpStatus.CONFLICT);
@@ -50,28 +37,23 @@ public class FlightController {
     @GetMapping("/flights/get")
     public ResponseEntity<Resource> getFlights(@RequestParam(name = "departure", required = false) String departure,
                                                @RequestParam(name = "destination", required = false) String destination) throws IOException {
-        List<Flight> lst = new ArrayList<>();
-        List<FlightProfile> flights = new ArrayList<>();
-        lst = service.getFlights(departure, destination);
-        for(Flight fl : lst){
-            File file = new File(UPLOAD_DIRECTORY + "/" + fl.getFilePath());
-            FileInputStream str = new FileInputStream(file);
-            byte[] arr = new byte[(int)file.length()];
-            str.read(arr);
-            str.close();
-            flights.add(new FlightProfile(fl, arr));
-        }
-        return new ResponseEntity(flights, HttpStatus.OK);
+        return new ResponseEntity(service.convertFlights(departure, destination), HttpStatus.OK);
     }
 
     @DeleteMapping("/flights/delete/{id}")
-    public void deleteFlight(@PathVariable("id") Long id){
+    public ResponseEntity deleteFlight(@PathVariable("id") Long id) throws IOException {
         service.deleteFlight(id);
+        return new ResponseEntity(service.convertFlights(null,null), HttpStatus.OK);
     }
 
-    @PutMapping("/flights/change/{id}")
-    public ResponseEntity updateFlight(@PathVariable("id") Long id, @RequestBody Flight flight){
-        if (service.updateFlight(id, flight)){
+    @PutMapping(path = "/flights/change/{id}",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateFlight(@PathVariable("id") Long id,
+                                       @RequestParam("file") MultipartFile file,
+                                       @RequestParam("departure") String departure,
+                                       @RequestParam("destination") String destination) throws IOException {
+        if (service.updateFlight(id, departure, destination, file)){
             return new ResponseEntity("Node updated", HttpStatus.OK);
         }
         return new ResponseEntity("Such node is already exist", HttpStatus.CONFLICT);

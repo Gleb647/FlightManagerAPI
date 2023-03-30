@@ -19,19 +19,23 @@ public class FlightRepositoryTest {
 
     @BeforeEach
     void setup(){
-        Flight flight = new Flight(1L,"krakow", "london");
+        Flight flight = new Flight(1L,"krakow", "london", "picture");
         flightsRepository.save(flight);
     }
 
     @Test
     void checkIfNodeExistTestIfNodeExist(){
-        Flight flight = new Flight(1L,"krakow", "london");
-        assertFalse(flightsRepository.checkIfNodeExist(flight.getDeparture(), flight.getDestination()).isEmpty());
+        Flight flight = new Flight(1L,"krakow", "london", "picture");
+        assertFalse(flightsRepository.checkIfNodeExist(
+                flight.getDeparture(), flight.getDestination(), flight.getFilePath()).isEmpty()
+        );
     }
 
     @Test
     void checkIfNodeExistTestIfNodeNotExist(){
-        Flight flight = new Flight(1L,"krakow", "londn");
-        assertTrue(flightsRepository.checkIfNodeExist(flight.getDeparture(), flight.getDestination()).isEmpty());
+        Flight flight = new Flight(1L,"krakow", "londn",  "picture");
+        assertTrue(flightsRepository.checkIfNodeExist(
+                flight.getDeparture(), flight.getDestination(), flight.getFilePath()).isEmpty()
+        );
     }
 }

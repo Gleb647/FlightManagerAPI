@@ -25,8 +25,8 @@ class FlightInfoRepositoryTest {
 
     @BeforeEach
     public void setup(){
-        Flight flight1 = new Flight("minsk", "istanbul");
-        Flight flight2 = new Flight("dublin", "paris");
+        Flight flight1 = new Flight("minsk", "istanbul", null);
+        Flight flight2 = new Flight("dublin", "paris", null);
 
         FlightInfoEntity flightInfo1 = new FlightInfoEntity("turkish airlines", 2, 100,
                 LocalDateTime.now(), flight1);
@@ -76,8 +76,8 @@ class FlightInfoRepositoryTest {
 
     @Test
     void deleteAllFlightInfoByFlightIdTest() {
-        Flight flight1 = new Flight("paris", "madrid");
-        Flight flight2 = new Flight("erevan", "moscow");
+        Flight flight1 = new Flight("paris", "madrid", null);
+        Flight flight2 = new Flight("erevan", "moscow", null);
 
         FlightInfoEntity flightInfo1 = new FlightInfoEntity("france airlines", 2, 100,
                 LocalDateTime.now(), flight1);

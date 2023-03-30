@@ -30,7 +30,7 @@ public class FlightInfoServiceTest {
     private FlightInfoService info_service;
 
     public List<Flight> setup(){
-        return Arrays.asList(new Flight(1L, "minsk", "brest"));
+        return Arrays.asList(new Flight(1L, "minsk", "brest", null));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class FlightInfoServiceTest {
 
     @Test
     public void checkIfNotExpiredIfExpired() throws NullPointerException{
-        Flight flight = new Flight(2L, "minsk", "brest");
+        Flight flight = new Flight(2L, "minsk", "brest", null);
         FlightInfoEntity info = new FlightInfoEntity(2L,
                 "belavia", 1, 100, LocalDateTime.of(
                 2023, 03, 10, 10, 10), flight);
