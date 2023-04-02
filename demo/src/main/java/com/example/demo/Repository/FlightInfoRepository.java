@@ -28,7 +28,7 @@ public interface FlightInfoRepository extends JpaRepository<FlightInfoEntity, Lo
     void deleteAllFlightInfoByFlightId(@Param("id") Long id);
 
     @Query(
-            value = "SELECT * FROM flight_info u WHERE u.flight_id = :id AND u.cost >= :min AND u.cost <= :max",
+            value = "SELECT * FROM flight_info u WHERE u.flight_id = :id AND u.cost BETWEEN :min AND :max",
             nativeQuery = true)
     List<FlightInfoEntity> findAllFlightsBetween(@PathVariable("id") Long id, @Param("min") Integer min, @Param("max") Integer max);
 

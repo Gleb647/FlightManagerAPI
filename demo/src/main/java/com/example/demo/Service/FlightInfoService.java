@@ -50,7 +50,7 @@ public class FlightInfoService {
 
     public boolean updateFlight(Long id, FlightInfoEntity info){
         FlightInfoEntity checkFlight = flightInfoRepo.findById(id).orElseThrow(() ->
-                new IllegalStateException("Flightinfo with id " + id + " doesn't exist"));
+                new IllegalStateException("Flight info with id " + id + " doesn't exist"));
         if (flightInfoRepo.checkIfNodeExist(info.getCarrier(), info.getFlightDuration(),
                 checkFlight.getCost(), info.getDate()).isEmpty()){
             checkFlight.setCarrier(info.getCarrier());

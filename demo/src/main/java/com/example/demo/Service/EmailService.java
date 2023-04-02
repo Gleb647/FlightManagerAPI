@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import com.example.demo.EmailDetails.EmailDetails;
+import com.example.demo.Logger.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -21,7 +22,6 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-
     public boolean sendSimpleMail(EmailDetails details) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -30,13 +30,19 @@ public class EmailService {
             mailMessage.setTo(details.getRecipient());
             mailMessage.setText(details.getMsgBody());
             mailMessage.setSubject(details.getSubject());
-
             javaMailSender.send(mailMessage);
+            CustomLogger.info(
+                    "{}: mail to {} sent",
+                    this.getClass().getName(), details.getRecipient());
             return true;
         }
         catch (Exception e) {
+            CustomLogger.error(
+                    "{}: error while sending mail to {}",
+                    this.getClass().getName(), details.getRecipient());
             return false;
         }
+
     }
 
     public String sendMailWithAttachment(EmailDetails details) {
@@ -60,12 +66,16 @@ public class EmailService {
                     file.getFilename(), file);
 
             javaMailSender.send(mimeMessage);
-            return "Mail sent Successfully";
+            CustomLogger.info(
+                    "{}: mail with attachment to {} sent",
+                    this.getClass().getName(), details.getRecipient());
         }
 
         catch (MessagingException e) {
-
-            return "Error while sending mail!!!";
+            CustomLogger.error(
+                    "{}: error while sending mail with attachment to {}",
+                    this.getClass().getName(), details.getRecipient());
         }
+        return null;
     }
 }

@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.demo.Logger.CustomLogger;
 import com.example.demo.Model.Role;
 import com.example.demo.RoleToUser.RoleToUserForm;
 import com.example.demo.Service.UserService;
@@ -40,8 +41,12 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity signUp(@RequestBody User user){
         if (userService.saveUser(user) == null){
-            return new ResponseEntity("User with typed username is already exist", HttpStatus.CONFLICT);
+            CustomLogger.error(
+                    "{}: user with username {} is already exist", this.getClass().getName(),
+                    user.getUsername());
+            return new ResponseEntity("User with provided username is already exist", HttpStatus.CONFLICT);
         }
+        CustomLogger.info("{}: new user created", this.getClass().getName());
         return new ResponseEntity("User created", HttpStatus.OK);
     }
 

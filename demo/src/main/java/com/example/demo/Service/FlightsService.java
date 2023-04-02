@@ -1,11 +1,13 @@
 package com.example.demo.Service;
 
 import com.example.demo.FlightProfile.FlightProfile;
+import com.example.demo.Logger.CustomLogger;
 import com.example.demo.Model.FlightInfoEntity;
 import com.example.demo.Repository.FlightInfoRepository;
 import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,11 +23,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.example.demo.Controller.FlightController.UPLOAD_DIRECTORY;
-
 @Service
-@Transactional
 public class FlightsService {
+
+    @Value("${UPLOAD_DIRECTORY}")
+    public static String UPLOAD_DIRECTORY;
 
     @Autowired
     private FlightsRepository repository;
@@ -38,19 +40,17 @@ public class FlightsService {
         this.flight_info_rep = flight_info_rep;
     }
 
-    public boolean updateFlight(Long id, String departure, String destination, MultipartFile file) throws IOException {
+    public boolean updateFlight(Long id, String departure, String destination, MultipartFile file){
         Flight checkFlight = repository.findById(id).orElseThrow(() ->
                 new IllegalStateException("Flight with id " + id + " doesn't exist"));
         if (repository.checkIfNodeExist(departure, destination, file.getOriginalFilename()).isEmpty()){
-            File fl = new File(UPLOAD_DIRECTORY + "/" + file.getOriginalFilename());
-            if (fl != null){
-                fl.delete();
-            }
+            File fl = new File(UPLOAD_DIRECTORY + "/" + checkFlight.getFilePath());
+            fl.delete();
             createFileLocal(file);
-
             checkFlight.setDeparture(departure);
             checkFlight.setDestination(destination);
             checkFlight.setFilePath(file.getOriginalFilename());
+            repository.save(checkFlight);
             return true;
         }
         return false;
@@ -74,6 +74,7 @@ public class FlightsService {
         return lst;
     }
 
+    @Transactional
     public void checkIfFlightInfosNotExpired(Flight fl){
         List<FlightInfoEntity> info = flight_info_rep.findAllExpNotes(fl.getId());
         for (FlightInfoEntity item : info){
@@ -84,7 +85,7 @@ public class FlightsService {
         }
     }
 
-    public Boolean saveFlight(String departure, String destination, MultipartFile file) throws IOException {
+    public Boolean saveFlight(String departure, String destination, MultipartFile file){
         if (departure.isBlank() || destination.isBlank()){
             return false;
         }
@@ -98,30 +99,41 @@ public class FlightsService {
         return true;
     }
 
+    @Transactional
     public void deleteFlight(Long id){
         flight_info_rep.deleteAllFlightInfoByFlightId(id);
         repository.deleteById(id);
     }
 
-    public List<FlightProfile> convertFlights(String departure, String destination) throws IOException {
+    public List<FlightProfile> convertFlights(String departure, String destination) {
         List<Flight> lst;
         List<FlightProfile> flights = new ArrayList<>();
         lst = getFlights(departure, destination);
-        for(Flight fl : lst){
-            File file = new File(UPLOAD_DIRECTORY + "/" + fl.getFilePath());
-            FileInputStream str = new FileInputStream(file);
-            byte[] arr = new byte[(int)file.length()];
-            str.read(arr);
-            str.close();
-            flights.add(new FlightProfile(fl, arr));
+        try {
+            for(Flight fl : lst){
+                File file = new File(UPLOAD_DIRECTORY + "/" + fl.getFilePath());
+                FileInputStream str = new FileInputStream(file);
+                byte[] arr = new byte[(int)file.length()];
+                str.read(arr);
+                str.close();
+                flights.add(new FlightProfile(fl, arr));
+            }
+        }
+        catch (IOException e){
+            CustomLogger.error("{}: error while converting flight images", this.getClass().getName());
         }
         return flights;
     }
 
-    public void createFileLocal(MultipartFile file) throws IOException {
-        StringBuilder fileNames = new StringBuilder();
-        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
-        fileNames.append(file.getOriginalFilename());
-        Files.write(fileNameAndPath, file.getBytes());
+    public void createFileLocal(MultipartFile file){
+        try{
+            StringBuilder fileNames = new StringBuilder();
+            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
+            fileNames.append(file.getOriginalFilename());
+            Files.write(fileNameAndPath, file.getBytes());
+        }
+        catch (IOException e){
+            CustomLogger.error("{}: error while uploading image", this.getClass().getName());
+        }
     }
 }
