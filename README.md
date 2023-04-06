@@ -43,11 +43,16 @@ P.S do not upload big files - server can decline such note. Available formats ar
 ## You can run client, database and server locally via Docker
 just follow this commands:
 
-	docker pull gleb647/dockerized-backend\
-	docker pull gleb647/dockerized-client\
+	docker pull gleb647/dockerized-backend
+ 
+	docker pull gleb647/dockerized-client
+ 
 	docker pull gleb647/postgres
-
-	docker run -p 3000:3000 gleb647/dockerized-client\
-	docker run --name postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 gleb647/postgres\
-	docker volume create static\
+ 
+	docker run -p 3000:3000 gleb647/dockerized-client
+ 
+	docker run --name postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 gleb647/postgres
+ 
+	docker volume create static
+ 
 	docker run -p 8080:8080 -v static:/data -e TZ=Europe/Moscow gleb647/dockerized-backend
