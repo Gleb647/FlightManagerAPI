@@ -11,14 +11,14 @@ Endpoints:
 | /flights/add | add flight |
 | /flights/get | get flights |
 | /flights/delete/{id} | delete flight by id and it's fligth info too |
-| /flights/change/{id} | change flight data(departure, destination, image) |
+| /flights/change/{id} | change flight data (departure, destination, image) |
 	
 	for Flight_Info(class with more detailed info about flight):
 | URL | Description | 
 |:---|:---|
 | /flightinfo/{id} | add flight info for flight with id=:id |
 | /flightinfo/get/{id} | get flight info for flight |
-| /flightinfo/get-flight-info-between/{id} | get all flight info's between 2 params(minimal flight cost and maximum flight cost) |
+| /flightinfo/get-flight-info-between/{id} | get all flight info's between 2 params (minimal flight cost and maximum flight cost) |
 | /flightinfo/delete/{id} | "/flightinfo/delete/{id}" - delete flight info for flight |
 | /flightinfo/change/{id} | change flight info for flight |
 	
@@ -43,24 +43,24 @@ P.S do not upload big files - server can decline such note. Available formats ar
 ## You can run client, database and server locally via Docker
 just follow this commands:
 
-Copy server from docker hub
+Copy server container from docker hub
 
 	docker pull gleb647/dockerized-backend
-Copy client from docker hub
+Copy client
 
 	docker pull gleb647/dockerized-client
-Copy databse from docker hub
+Copy database
  
 	docker pull gleb647/postgres
-Run client app
+Run client
  
 	docker run -p 3000:3000 gleb647/dockerized-client
-Run database(it's requires credentials)
+Run database (it's requires credentials)
  
 	docker run --name postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 gleb647/postgres
 Create volume for images
  
 	docker volume create static
-Run server(if another timezone provided flight info can be deleted in another time)
+Run server (if another timezone provided flight info can be deleted in another time)
  
 	docker run -p 8080:8080 -v static:/data -e TZ=Europe/Moscow gleb647/dockerized-backend
