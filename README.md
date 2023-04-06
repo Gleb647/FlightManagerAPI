@@ -43,16 +43,24 @@ P.S do not upload big files - server can decline such note. Available formats ar
 ## You can run client, database and server locally via Docker
 just follow this commands:
 
+Copy server from docker hub
+
 	docker pull gleb647/dockerized-backend
- 
+Copy client from docker hub
+
 	docker pull gleb647/dockerized-client
+Copy databse from docker hub
  
 	docker pull gleb647/postgres
+Run client app
  
 	docker run -p 3000:3000 gleb647/dockerized-client
+Run database(it's requires credentials)
  
 	docker run --name postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 gleb647/postgres
+Create volume for images
  
 	docker volume create static
+Run server(if another timezone provided flight info can be deleted in another time)
  
 	docker run -p 8080:8080 -v static:/data -e TZ=Europe/Moscow gleb647/dockerized-backend
