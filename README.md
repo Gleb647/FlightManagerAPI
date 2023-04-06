@@ -25,7 +25,7 @@ Endpoints:
 	for Ticket:
 | URL | Description | 
 |:---|:---|
-| /buy-ticket/{id} | add ticket to db. It's contains user's, flight and flight info data. If real mail was provided during registration you will receive created ticketd |
+| /buy-ticket/{id} | add ticket to db. It's contains user's, flight and flight info data. If real mail was provided during registration you will receive created ticket |
 	
 	for Users:
 | URL | Description | 
