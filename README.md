@@ -13,7 +13,7 @@ Endpoints:
 | /flights/delete/{id} | delete flight by id and it's fligth info too |
 | /flights/change/{id} | change flight data (departure, destination, image) |
 	
-	for Flight_Info(class with more detailed info about flight):
+	for Flight_Info (class with more detailed info about flight):
 | URL | Description | 
 |:---|:---|
 | /flightinfo/{id} | add flight info for flight with id=:id |
