@@ -1,9 +1,9 @@
-# This is API for flight tickets client app in FlightManagerClient repo. 
+# This is an API for flight tickets client app in FlightManagerClient repo. 
 ## Short decription
 Tech stack: Java 15, Spring MVC, Spring Data, Hibernate, Spring Security, Lombok, JUnit, Mockito, PostgreSQL.
 Allowed operations for users are defined by jwt token info about roles. There are 2 roles: ROLE_USER and ROLE_ADMIN. Simple users can only make get requests to watch flights, flights info and buy new tickets. Admins can make all CRUD operations with flight and flight info, but they can not buy tickets.
 
-Endpoints\
+Endpoints:
 	for Flights:
 | URL | Description | 
 |:---|:---|
