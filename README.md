@@ -6,7 +6,7 @@ Allowed operations for users are defined by jwt token info about roles. There ar
 Endpoints:
 
 	for Flights:
-| URL | Description | 
+| URI | Description | 
 |:---|:---|
 | /flights/add | add flight |
 | /flights/get | get flights |
@@ -14,7 +14,7 @@ Endpoints:
 | /flights/change/{id} | change flight data (departure, destination, image) |
 	
 	for Flight_Info (class with more detailed info about flight):
-| URL | Description | 
+| URI | Description | 
 |:---|:---|
 | /flightinfo/{id} | add flight info for flight with id=:id |
 | /flightinfo/get/{id} | get flight info for flight |
@@ -23,12 +23,12 @@ Endpoints:
 | /flightinfo/change/{id} | change flight info for flight |
 	
 	for Ticket:
-| URL | Description | 
+| URI | Description | 
 |:---|:---|
 | /buy-ticket/{id} | add ticket to db. It's contains user's, flight and flight info data. If real mail was provided during registration you will receive created ticket |
 	
 	for Users:
-| URL | Description | 
+| URI | Description | 
 |:---|:---|
 | /users/get | get registered users |
 | /signup | sign up with username and password |
