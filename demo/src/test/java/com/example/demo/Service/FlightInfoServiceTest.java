@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +30,7 @@ public class FlightInfoServiceTest {
     private FlightsRepository flight_repo;
 
     @InjectMocks
-    private FlightInfoService info_service;
+    private FlightInfoServiceImpl info_service;
 
     public List<Flight> setup(){
         return Arrays.asList(new Flight(1L, "minsk", "brest", null));
@@ -91,12 +94,12 @@ public class FlightInfoServiceTest {
     public void findFlightInfoBetweenTest(){
         FlightInfoEntity info = new FlightInfoEntity(
                 "belavia", 1, 100, LocalDateTime.now(), setup().get(0));
-        lenient().when(info_repo.findAllFlightsBetween(1L, 1, 9)).thenReturn(
-                Arrays.asList(info)
+        lenient().when(info_repo.findAllFlightsBetween(1L, 1, 9, null)).thenReturn(
+                new PageImpl<>(Arrays.asList(info))
         );
-        info_service.findFlightInfoBetween(1L, "1", "9");
+        info_service.findFlightInfoBetween(1L, "1", "9", null);
         verify(info_repo, times(1)).findAllFlightsBetween(
-                1L, Integer.valueOf(1), Integer.valueOf(9)
+                1L, Integer.valueOf(1), Integer.valueOf(9), null
         );
     }
 
@@ -104,24 +107,24 @@ public class FlightInfoServiceTest {
     public void findFlightInfoBelowTest() {
         FlightInfoEntity info = new FlightInfoEntity(
                 "belavia", 1, 100, LocalDateTime.now(), setup().get(0));
-        lenient().when(info_repo.findAllFlightsBelow(1L, 9)).thenReturn(
-                Arrays.asList(info)
+        lenient().when(info_repo.findAllFlightsBelow(1L, 9, null)).thenReturn(
+                new PageImpl<>(Arrays.asList(info))
         );
-        info_service.findFlightInfoBetween(1L, null, "9");
+        info_service.findFlightInfoBetween(1L, null, "9", null);
         verify(info_repo, times(1)).findAllFlightsBelow(
-                1L, Integer.valueOf(9)
+                1L, 9, null
         );
     }
     @Test
     public void findFlightInfoAboveTest() {
         FlightInfoEntity info = new FlightInfoEntity(
                 "belavia", 1, 100, LocalDateTime.now(), setup().get(0));
-        lenient().when(info_repo.findAllFlightsAbove(1L, 1)).thenReturn(
-                Arrays.asList(info)
+        lenient().when(info_repo.findAllFlightsAbove(1L, 1, null)).thenReturn(
+                new PageImpl<>(Arrays.asList(info))
         );
-        info_service.findFlightInfoBetween(1L, "1", null);
+        info_service.findFlightInfoBetween(1L, "1", null, null);
         verify(info_repo, times(1)).findAllFlightsAbove(
-                1L, Integer.valueOf(1)
+                1L, 1, null
         );
     }
 }

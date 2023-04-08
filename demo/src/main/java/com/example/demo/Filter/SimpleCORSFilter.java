@@ -26,9 +26,4 @@ public class SimpleCORSFilter implements Filter {
                 "Access-Control-Allow-Headers, Accept");
         chain.doFilter(req, res);
     }
-
-    public void init(FilterConfig filterConfig) {}
-
-    public void destroy() {}
-
 }

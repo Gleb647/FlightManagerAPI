@@ -8,26 +8,21 @@ import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class FlightsService {
+public class FlightsServiceImpl implements FlightService{
 
-    @Value("${UPLOAD_DIRECTORY}")
-    public static String UPLOAD_DIRECTORY;
+    //private static String UPLOAD_DIRECTORY = "/data";
+    private static String UPLOAD_DIRECTORY ="/home/gleb/IdeaProjects/FlightManager.server/API/FlightManageAPI/demo/src/main/resources/static";
 
     @Autowired
     private FlightsRepository repository;
@@ -35,7 +30,10 @@ public class FlightsService {
     @Autowired
     private FlightInfoRepository flight_info_rep;
 
-    public FlightsService(FlightsRepository repository, FlightInfoRepository flight_info_rep) {
+    @Autowired
+    private FlightConverterUtilsImpl flightConverterUtilsImpl;
+
+    public FlightsServiceImpl(FlightsRepository repository, FlightInfoRepository flight_info_rep) {
         this.repository = repository;
         this.flight_info_rep = flight_info_rep;
     }
@@ -46,7 +44,7 @@ public class FlightsService {
         if (repository.checkIfNodeExist(departure, destination, file.getOriginalFilename()).isEmpty()){
             File fl = new File(UPLOAD_DIRECTORY + "/" + checkFlight.getFilePath());
             fl.delete();
-            createFileLocal(file);
+            flightConverterUtilsImpl.createFileLocal(file);
             checkFlight.setDeparture(departure);
             checkFlight.setDestination(destination);
             checkFlight.setFilePath(file.getOriginalFilename());
@@ -56,27 +54,27 @@ public class FlightsService {
         return false;
     }
 
-    public List<Flight> getFlights(String departure, String destination){
-        List<Flight> lst;
-        lst = repository.getAllFlightsOrderedById();
+    public Page<Flight> getFlights(String departure, String destination, Pageable paging){
+        Page<Flight> lst;
+        lst = repository.getAllFlightsOrderedById(paging);
         for (Flight fl : lst){
-            checkIfFlightInfosNotExpired(fl);
+            checkIfFlightInfosNotExpired(fl, paging);
         }
         if (departure != null){
-            lst = repository.findByDepartureLike(departure);
+            lst = repository.findByDepartureLike(departure, paging);
         }
         else if(destination != null){
-            lst = repository.findByDestinationLike(destination);
+            lst = repository.findByDestinationLike(destination, paging);
         }
         else {
-            lst = repository.getAllFlightsOrderedById();
+            lst = repository.getAllFlightsOrderedById(paging);
         }
         return lst;
     }
 
     @Transactional
-    public void checkIfFlightInfosNotExpired(Flight fl){
-        List<FlightInfoEntity> info = flight_info_rep.findAllExpNotes(fl.getId());
+    public void checkIfFlightInfosNotExpired(Flight fl, Pageable paging){
+        List<FlightInfoEntity> info = flight_info_rep.findAllExpNotes(fl.getId(), paging).getContent();
         for (FlightInfoEntity item : info){
             if (LocalDateTime.now().isAfter(item.getDate())){
                 repository.findById(item.getFlight().getId()).get().decreaseFlightsAvailableCount();
@@ -90,9 +88,9 @@ public class FlightsService {
             return false;
         }
         Flight flight = new Flight(departure, destination, file.getOriginalFilename());
-        createFileLocal(file);
-        if ((!repository.findByDepartureLike(flight.getDeparture()).isEmpty()) &&
-                (!repository.findByDestinationLike(flight.getDestination()).isEmpty())){
+        flightConverterUtilsImpl.createFileLocal(file);
+        if ((!repository.findByDepartureLike(flight.getDeparture(), null).isEmpty()) &&
+                (!repository.findByDestinationLike(flight.getDestination(), null).isEmpty())){
             return false;
         }
         repository.save(flight);
@@ -103,37 +101,5 @@ public class FlightsService {
     public void deleteFlight(Long id){
         flight_info_rep.deleteAllFlightInfoByFlightId(id);
         repository.deleteById(id);
-    }
-
-    public List<FlightProfile> convertFlights(String departure, String destination) {
-        List<Flight> lst;
-        List<FlightProfile> flights = new ArrayList<>();
-        lst = getFlights(departure, destination);
-        try {
-            for(Flight fl : lst){
-                File file = new File(UPLOAD_DIRECTORY + "/" + fl.getFilePath());
-                FileInputStream str = new FileInputStream(file);
-                byte[] arr = new byte[(int)file.length()];
-                str.read(arr);
-                str.close();
-                flights.add(new FlightProfile(fl, arr));
-            }
-        }
-        catch (IOException e){
-            CustomLogger.error("{}: error while converting flight images", this.getClass().getName());
-        }
-        return flights;
-    }
-
-    public void createFileLocal(MultipartFile file){
-        try{
-            StringBuilder fileNames = new StringBuilder();
-            Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
-            fileNames.append(file.getOriginalFilename());
-            Files.write(fileNameAndPath, file.getBytes());
-        }
-        catch (IOException e){
-            CustomLogger.error("{}: error while uploading image", this.getClass().getName());
-        }
     }
 }

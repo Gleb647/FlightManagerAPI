@@ -1,21 +1,30 @@
 package com.example.demo.Controller;
 
+import com.example.demo.FlightProfile.FlightProfile;
 import com.example.demo.Logger.CustomLogger;
-import com.example.demo.Service.FlightsService;
+import com.example.demo.Service.FlightConverterUtils;
+import com.example.demo.Service.FlightConverterUtilsImpl;
+import com.example.demo.Service.FlightsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+
+import java.util.List;
 
 @CrossOrigin("*")
 @RestController
 public class FlightController {
     @Autowired
-    private FlightsService service;
+    private FlightsServiceImpl service;
+
+    @Autowired
+    private FlightConverterUtilsImpl flightConverterUtilsImpl;
 
     @PostMapping(
             path = "/flights/add",
@@ -33,16 +42,21 @@ public class FlightController {
     }
 
     @GetMapping("/flights/get")
-    public ResponseEntity<Resource> getFlights(@RequestParam(name = "departure", required = false) String departure,
-                                               @RequestParam(name = "destination", required = false) String destination){
-        return new ResponseEntity(service.convertFlights(departure, destination), HttpStatus.OK);
+    public ResponseEntity<List<FlightProfile>> getFlights(
+                @RequestParam(name = "departure", required = false) String departure,
+                @RequestParam(name = "destination", required = false) String destination,
+                @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                @RequestParam(name = "pageSize", required = false) Integer pageSize){
+        Pageable paging = PageRequest.of(pageNum, pageSize);
+        return new ResponseEntity<>(flightConverterUtilsImpl.convertFlights(departure, destination, paging), HttpStatus.OK);
     }
 
     @DeleteMapping("/flights/delete/{id}")
-    public ResponseEntity deleteFlight(@PathVariable("id") Long id) throws IOException {
+    public ResponseEntity deleteFlight(@PathVariable("id") Long id){
         service.deleteFlight(id);
         CustomLogger.info("{}: flight {} deleted", this.getClass().getName(), String.valueOf(id));
-        return new ResponseEntity(service.convertFlights(null,null), HttpStatus.OK);
+        return new ResponseEntity(
+                flightConverterUtilsImpl.convertFlights(null,null, null), HttpStatus.OK);
     }
 
     @PutMapping(path = "/flights/change/{id}",
@@ -54,11 +68,11 @@ public class FlightController {
                                        @RequestParam("destination") String destination){
         if (service.updateFlight(id, departure, destination, file)){
             CustomLogger.info("{}: flight {} updated", this.getClass().getName(), String.valueOf(id));
-            return new ResponseEntity("Node updated", HttpStatus.OK);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         CustomLogger.warn("{}: attempt to update flight {} with already existing data",
                 this.getClass().getName(), String.valueOf(id));
-        return new ResponseEntity("Such node is already exist", HttpStatus.CONFLICT);
+        return new ResponseEntity(HttpStatus.CONFLICT);
     }
 
 }

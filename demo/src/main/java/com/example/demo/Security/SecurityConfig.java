@@ -3,6 +3,7 @@ package com.example.demo.Security;
 import com.example.demo.Filter.CustomAuthenticationFilter;
 import com.example.demo.Filter.CustomAuthorizationFilter;
 import com.example.demo.Filter.SimpleCORSFilter;
+import com.example.demo.Jwt.JwtServiceImpl;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +31,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder bCryptPasswordEncoder, UserService userService) {
+    @Autowired
+    private final JwtServiceImpl jwtService;
+
+    public SecurityConfig(
+            UserDetailsService userDetailsService,
+            PasswordEncoder bCryptPasswordEncoder,
+            UserService userService,
+            JwtServiceImpl jwtService) {
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -64,8 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/flightinfo/change/**").hasAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin().permitAll();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), userService));
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean(), userService, jwtService));
+        http.addFilterBefore(new CustomAuthorizationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

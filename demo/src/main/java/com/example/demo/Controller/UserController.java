@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.demo.Jwt.JwtServiceImpl;
 import com.example.demo.Logger.CustomLogger;
 import com.example.demo.Model.Role;
 import com.example.demo.RoleToUser.RoleToUserForm;
@@ -32,6 +33,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtServiceImpl jwtService;
 
     @GetMapping("/users/get")
     public ResponseEntity<List<User>> getUsers(){
@@ -70,29 +74,13 @@ public class UserController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
             try{
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
-                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-                JWTVerifier verifier = JWT.require(algorithm).build();
-                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                DecodedJWT decodedJWT = jwtService.verifyToken(refresh_token);
                 String username = decodedJWT.getSubject();
                 User user = userService.getUser(username);
-                Date access_toke_exp = new Date(System.currentTimeMillis() + 15 * 60 * 1000);
-                long mili = access_toke_exp.getTime();
-                String mil = String.valueOf(mili);
-                String access_token = JWT.create()
-                        .withSubject(user.getUsername())
-                        .withExpiresAt(access_toke_exp)
-                        .withIssuer(request.getRequestURI().toString())
-                        .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                        .sign(algorithm);
-                String new_refresh_token = JWT.create()
-                        .withSubject(user.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                        .withIssuer(request.getRequestURI().toString())
-                        .sign(algorithm);
-                Map<String, String > tokens = new HashMap<>();
-                tokens.put("access_token", access_token);
-                tokens.put("refresh_token", new_refresh_token);
-                tokens.put("exp", mil);
+                Map<String, String> tokens = jwtService.generateToken(
+                        user.getUsername(),
+                        request,
+                        user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
             }catch (Exception exception){

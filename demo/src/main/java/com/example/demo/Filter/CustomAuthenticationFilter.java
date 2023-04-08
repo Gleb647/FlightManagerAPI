@@ -1,10 +1,9 @@
 package com.example.demo.Filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+
+import com.example.demo.Jwt.JwtServiceImpl;
 import com.example.demo.Service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,16 +22,20 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService){
+    private final JwtServiceImpl jwtService;
+
+    public CustomAuthenticationFilter(
+            AuthenticationManager authenticationManager, UserService userService, JwtServiceImpl jwtService){
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -46,31 +49,13 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         List<String> lst;
         lst = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         if (lst.isEmpty()){
             lst.add("ROLE_USER");
             userService.addRoleToUser(user.getUsername(), "ROLE_USER");
         }
-        Date access_toke_exp = new Date(System.currentTimeMillis() + 15 * 60 * 1000);
-        long mili = access_toke_exp.getTime();
-        String mil = String.valueOf(mili);
-        String access_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(access_toke_exp)
-                .withIssuer(request.getRequestURI().toString())
-                .withClaim("roles", lst)
-                .sign(algorithm);
-        String refresh_token = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                .withIssuer(request.getRequestURI().toString())
-                .sign(algorithm);
-        Map<String, String > tokens = new HashMap<>();
-        tokens.put("access_token", access_token);
-        tokens.put("refresh_token", refresh_token);
-        tokens.put("exp", mil);
+        Map<String, String> tokens = jwtService.generateToken(user.getUsername(), request, lst);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }

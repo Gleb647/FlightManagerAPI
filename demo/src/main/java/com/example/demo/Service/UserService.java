@@ -33,8 +33,6 @@ public class UserService implements UserDetailsService {
         User user = userRepo.findByUsername(username);
         if (user == null){
             throw new UsernameNotFoundException("User not found in database");
-        }else{
-
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {

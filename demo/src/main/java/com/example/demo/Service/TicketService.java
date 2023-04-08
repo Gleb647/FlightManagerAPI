@@ -8,6 +8,7 @@ import com.example.demo.Model.User;
 import com.example.demo.Repository.FlightInfoRepository;
 import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Repository.TicketRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +17,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class TicketService {
 
-    @Autowired
     public UserService user_service;
 
-    @Autowired
     public FlightInfoRepository flight_info_repo;
 
-    @Autowired
     public TicketRepo ticket_repo;
 
-    @Autowired
     public EmailService email_service;
 
     @Transactional

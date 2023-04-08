@@ -1,11 +1,12 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Logger.CustomLogger;
-import com.example.demo.Repository.FlightInfoRepository;
-import com.example.demo.Repository.FlightsRepository;
 import com.example.demo.Model.FlightInfoEntity;
-import com.example.demo.Service.FlightInfoService;
+import com.example.demo.Service.FlightInfoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 public class FlightInfoController {
 
     @Autowired
-    FlightInfoService service;
+    private FlightInfoServiceImpl service;
 
     @PostMapping("/flightinfo/{id}")
     public ResponseEntity addFlightInfo(@PathVariable("id") Long id, @RequestBody FlightInfoEntity flightInfo){
@@ -31,20 +32,26 @@ public class FlightInfoController {
     }
 
     @GetMapping("/flightinfo/get/{id}")
-    public ResponseEntity getFlightInfo(@PathVariable("id") Long id){
-        List<FlightInfoEntity> lst = service.findAllExpNotes(id);
+    public ResponseEntity getFlightInfo(@PathVariable("id") Long id,
+                                        @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                                        @RequestParam(name = "pageSize", required = false) Integer pageSize){
+        Pageable paging = PageRequest.of(pageNum, pageSize);
+        Page<FlightInfoEntity> lst = service.findAllExpNotes(id, paging);
         for (FlightInfoEntity node : lst){
             service.checkIfFlightNotExpired(node.getId());
         }
-        return new ResponseEntity(service.findAllExpNotes(id), HttpStatus.OK);
+        return new ResponseEntity(service.findAllExpNotes(id, paging), HttpStatus.OK);
     }
 
     @GetMapping("/flightinfo/get-flight-info-between/{id}")
     public ResponseEntity getFlightBetween(@PathVariable("id") Long id,
                                            @RequestParam(name = "min", required = false) String min,
-                                           @RequestParam(name = "max", required = false) String max){
+                                           @RequestParam(name = "max", required = false) String max,
+                                           @RequestParam(name = "pageNum", required = false) Integer pageNum,
+                                           @RequestParam(name = "pageSize", required = false) Integer pageSize){
+        Pageable paging = PageRequest.of(pageNum, pageSize);
         try{
-            return new ResponseEntity(service.findFlightInfoBetween(id, min, max), HttpStatus.OK);
+            return new ResponseEntity(service.findFlightInfoBetween(id, min, max, paging), HttpStatus.OK);
         }
         catch (Exception e) {
             return new ResponseEntity("Invalid data provided", HttpStatus.BAD_REQUEST);

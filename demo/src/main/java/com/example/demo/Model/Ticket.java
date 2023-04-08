@@ -19,7 +19,7 @@ public class Ticket {
     @OneToOne
     private User user;
 
-    @OneToOne
+    @ManyToOne
     private FlightInfoEntity flight;
 
     @Column(name = "date", nullable = false, columnDefinition = "TEXT")

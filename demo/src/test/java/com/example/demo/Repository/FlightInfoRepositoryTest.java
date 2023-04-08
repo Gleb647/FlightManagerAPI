@@ -46,32 +46,32 @@ class FlightInfoRepositoryTest {
 
     @Test
     void findAllExpNotesTest() {
-        assertEquals(infoRepo.findAllExpNotes(1L).size(), 3);
-        assertEquals(infoRepo.findAllExpNotes(2L).size(), 1);
+        assertEquals(infoRepo.findAllExpNotes(1L, null).getContent().size(), 3);
+        assertEquals(infoRepo.findAllExpNotes(2L, null).getContent().size(), 1);
     }
 
     @Test
     public void findAllBetweenTest() {
-        assertEquals(infoRepo.findAllFlightsBetween(1L,300, 500).size(), 2);
-        assertEquals(infoRepo.findAllFlightsBetween(1L,100, 0).size(), 0);
-        assertEquals(infoRepo.findAllFlightsBetween(1L,500, 501).size(), 1);
-        assertEquals(infoRepo.findAllFlightsBetween(1L,100, 500).size(), 3);
+        assertEquals(infoRepo.findAllFlightsBetween(1L,300, 500, null).getContent().size(), 2);
+        assertEquals(infoRepo.findAllFlightsBetween(1L,100, 0, null).getContent().size(), 0);
+        assertEquals(infoRepo.findAllFlightsBetween(1L,500, 501, null).getContent().size(), 1);
+        assertEquals(infoRepo.findAllFlightsBetween(1L,100, 500, null).getContent().size(), 3);
     }
 
     @Test
     public void findAllFlightsAboveTest() {
-        assertEquals(infoRepo.findAllFlightsAbove(1L,300).size(), 2);
-        assertEquals(infoRepo.findAllFlightsAbove(1L,100).size(), 3);
-        assertEquals(infoRepo.findAllFlightsAbove(1L,501).size(), 0);
-        assertEquals(infoRepo.findAllFlightsAbove(1L,500).size(), 1);
+        assertEquals(infoRepo.findAllFlightsAbove(1L,300, null).getContent().size(), 2);
+        assertEquals(infoRepo.findAllFlightsAbove(1L,100, null).getContent().size(), 3);
+        assertEquals(infoRepo.findAllFlightsAbove(1L,501, null).getContent().size(), 0);
+        assertEquals(infoRepo.findAllFlightsAbove(1L,500, null).getContent().size(), 1);
     }
 
     @Test
     public void findAllFlightsBelowTest() {
-        assertEquals(infoRepo.findAllFlightsBelow(1L,300).size(), 2);
-        assertEquals(infoRepo.findAllFlightsBelow(1L,100).size(), 1);
-        assertEquals(infoRepo.findAllFlightsBelow(1L,501).size(), 3);
-        assertEquals(infoRepo.findAllFlightsBelow(1L,500).size(), 3);
+        assertEquals(infoRepo.findAllFlightsBelow(1L,300, null).getContent().size(), 2);
+        assertEquals(infoRepo.findAllFlightsBelow(1L,100, null).getContent().size(), 1);
+        assertEquals(infoRepo.findAllFlightsBelow(1L,501, null).getContent().size(), 3);
+        assertEquals(infoRepo.findAllFlightsBelow(1L,500, null).getContent().size(), 3);
     }
 
     @Test
@@ -95,10 +95,10 @@ class FlightInfoRepositoryTest {
         infoRepo.save(flightInfo4);
 
         infoRepo.deleteAllFlightInfoByFlightId(4L);
-        assertEquals(infoRepo.findAllExpNotes(4L).size(), 0);
-        assertEquals(baseRepo.findAll().size(), 4);
+        assertEquals(infoRepo.findAllExpNotes(4L, null).getContent().size(), 0);
+        assertEquals(baseRepo.getAllFlightsOrderedById(null).getContent().size(), 4);
         baseRepo.deleteById(4L);
-        assertEquals(baseRepo.findAll().size(), 3);
+        assertEquals(baseRepo.getAllFlightsOrderedById(null).getContent().size(), 3);
     }
 
 }

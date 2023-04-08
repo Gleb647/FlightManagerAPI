@@ -1,12 +1,14 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Model.FlightInfoEntity;
-import com.example.demo.Service.FlightInfoService;
+import com.example.demo.Service.FlightInfoServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ContextConfiguration(classes = {FlightInfoController.class, FlightInfoService.class})
+@ContextConfiguration(classes = {FlightInfoController.class, FlightInfoServiceImpl.class})
 @WebMvcTest
 @AutoConfigureMockMvc(addFilters = false)
 public class FlightInfoControllerTest {
@@ -29,7 +31,7 @@ public class FlightInfoControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private FlightInfoService base_serv;
+    private FlightInfoServiceImpl base_serv;
 
     @Test
     public void addNewFlightInfoTest() throws Exception {
@@ -115,7 +117,7 @@ public class FlightInfoControllerTest {
     @Test
     public void getFlightInfoTest() throws Exception {
         LocalDateTime time = LocalDateTime.of(2023, 03, 18, 12, 00);
-        when(base_serv.findAllExpNotes(1L)).thenReturn(Arrays.asList(
+        when(base_serv.findAllExpNotes(1L, null)).thenReturn((Page<FlightInfoEntity>) Arrays.asList(
                 new FlightInfoEntity(1L,"belavia", 1, 100, time, null),
                 new FlightInfoEntity(2L,"lufthansa", 3, 300, time, null)
         ));
@@ -137,12 +139,12 @@ public class FlightInfoControllerTest {
     @Test
     public void getFlightBetween() throws Exception {
         LocalDateTime time = LocalDateTime.of(2023, 03, 18, 12, 00);
-        when(base_serv.findFlightInfoBetween(1L, "1", "9")).thenReturn(
-                Arrays.asList(
+        when(base_serv.findFlightInfoBetween(1L, "1", "9", null)).thenReturn(
+                new PageImpl<>(Arrays.asList(
                         new FlightInfoEntity(1L,"belavia", 1, 100, time, null),
                         new FlightInfoEntity(2L,"lufthansa", 3, 300, time, null),
                         new FlightInfoEntity(3L,"turkish airlines", 9, 500, time, null)
-                )
+                ))
         );
         mvc.perform(MockMvcRequestBuilders
                         .get("/flightinfo/get-flight-info-between/1")

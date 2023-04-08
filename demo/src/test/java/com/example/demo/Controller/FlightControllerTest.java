@@ -2,41 +2,33 @@ package com.example.demo.Controller;
 
 import com.example.demo.FlightProfile.FlightProfile;
 import com.example.demo.Model.Flight;
-import com.example.demo.Service.FlightsService;
+import com.example.demo.Service.FlightConverterUtilsImpl;
+import com.example.demo.Service.FlightsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
-import static org.postgresql.hostchooser.HostRequirement.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 
-@ContextConfiguration(classes = { FlightController.class, FlightsService.class})
+@ContextConfiguration(classes = { FlightController.class, FlightsServiceImpl.class})
 @WebMvcTest
 @AutoConfigureMockMvc(addFilters = false)
 class FlightControllerTest {
@@ -45,7 +37,10 @@ class FlightControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private FlightsService base_serv;
+    private FlightsServiceImpl base_serv;
+
+    @MockBean
+    private FlightConverterUtilsImpl flightConverterUtils;
     @Test
     void addNewFlight() throws Exception {
         Flight fl = new Flight("minsk", "krakow", null);
@@ -93,7 +88,7 @@ class FlightControllerTest {
         Flight fl2 = new Flight("dublin", "paris", null);
         FlightProfile profile1 = new FlightProfile(fl1, null);
         FlightProfile profile2 = new FlightProfile(fl2, null);
-        when(base_serv.convertFlights(null, null)).thenReturn(Arrays.asList(profile1, profile2));
+        when(flightConverterUtils.convertFlights(null, null, null)).thenReturn(Arrays.asList(profile1, profile2));
 
         mvc.perform(MockMvcRequestBuilders
                         .get("/flights/get")
@@ -110,7 +105,7 @@ class FlightControllerTest {
     void getFlightsWithParams() throws Exception{
         Flight fl1 = new Flight("minsk", "istanbul", null);
         FlightProfile profile = new FlightProfile(fl1, null);
-        when(base_serv.convertFlights("minsk", null)).thenReturn(Arrays.asList(profile));
+        when(flightConverterUtils.convertFlights("minsk", null, null)).thenReturn(Arrays.asList(profile));
 
         mvc.perform(MockMvcRequestBuilders
                         .get("/flights/get")
@@ -143,7 +138,7 @@ class FlightControllerTest {
                 .param("departure", "minsk")
                 .param("destination", "istanbul")
                 .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     public static String asJsonString(final Object obj) {
