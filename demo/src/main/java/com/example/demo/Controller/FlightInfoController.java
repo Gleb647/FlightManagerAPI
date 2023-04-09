@@ -36,7 +36,7 @@ public class FlightInfoController {
                                         @RequestParam(name = "pageNum", required = false) Integer pageNum,
                                         @RequestParam(name = "pageSize", required = false) Integer pageSize){
         Pageable paging = PageRequest.of(pageNum, pageSize);
-        Page<FlightInfoEntity> lst = service.findAllExpNotes(id, paging);
+        List<FlightInfoEntity> lst = service.findAllExpNotes(id, paging);
         for (FlightInfoEntity node : lst){
             service.checkIfFlightNotExpired(node.getId());
         }

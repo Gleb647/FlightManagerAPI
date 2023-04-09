@@ -37,7 +37,7 @@ public class FlightInfoServiceImpl implements FlightInfoService{
         }
     }
 
-    public Page<FlightInfoEntity> findFlightInfoBetween(Long id, String min, String max, Pageable paging){
+    public List<FlightInfoEntity> findFlightInfoBetween(Long id, String min, String max, Pageable paging){
         Page<FlightInfoEntity> lst;
         if (min != null && max != null){
             lst = flightInfoRepo.findAllFlightsBetween(id, Integer.parseInt(min), Integer.parseInt(max), paging);
@@ -48,7 +48,7 @@ public class FlightInfoServiceImpl implements FlightInfoService{
         else {
             lst =  flightInfoRepo.findAllFlightsBelow(id, Integer.parseInt(max), paging);
         }
-        return lst;
+        return lst.getContent();
     }
 
     public boolean updateFlight(Long id, FlightInfoEntity info){
@@ -66,8 +66,8 @@ public class FlightInfoServiceImpl implements FlightInfoService{
         return false;
     }
 
-    public Page<FlightInfoEntity> findAllExpNotes(Long id, Pageable paging){
-        return flightInfoRepo.findAllExpNotes(id, paging);
+    public List<FlightInfoEntity> findAllExpNotes(Long id, Pageable paging){
+        return flightInfoRepo.findAllExpNotes(id, paging).getContent();
     }
 
     public void deleteFlightInfo(Long id){

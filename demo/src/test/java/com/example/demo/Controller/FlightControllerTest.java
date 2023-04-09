@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
@@ -88,10 +90,13 @@ class FlightControllerTest {
         Flight fl2 = new Flight("dublin", "paris", null);
         FlightProfile profile1 = new FlightProfile(fl1, null);
         FlightProfile profile2 = new FlightProfile(fl2, null);
-        when(flightConverterUtils.convertFlights(null, null, null)).thenReturn(Arrays.asList(profile1, profile2));
+        Pageable paging = PageRequest.of(0, 4);
+        when(flightConverterUtils.convertFlights(null, null, paging)).thenReturn(Arrays.asList(profile1, profile2));
 
         mvc.perform(MockMvcRequestBuilders
                         .get("/flights/get")
+                        .param("pageNum", "0")
+                        .param("pageSize", "4")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].flight.departure", is(fl1.getDeparture())))
@@ -105,11 +110,14 @@ class FlightControllerTest {
     void getFlightsWithParams() throws Exception{
         Flight fl1 = new Flight("minsk", "istanbul", null);
         FlightProfile profile = new FlightProfile(fl1, null);
-        when(flightConverterUtils.convertFlights("minsk", null, null)).thenReturn(Arrays.asList(profile));
+        Pageable paging = PageRequest.of(0, 4);
+        when(flightConverterUtils.convertFlights("minsk", null, paging)).thenReturn(Arrays.asList(profile));
 
         mvc.perform(MockMvcRequestBuilders
                         .get("/flights/get")
                         .param("departure", "minsk")
+                        .param("pageNum", "0")
+                        .param("pageSize", "4")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].flight.departure", is(fl1.getDeparture())))

@@ -14,11 +14,11 @@ public interface FlightInfoService {
 
     void checkIfFlightNotExpired(Long id);
 
-    Page<FlightInfoEntity> findFlightInfoBetween(Long id, String min, String max, Pageable paging);
+    List<FlightInfoEntity> findFlightInfoBetween(Long id, String min, String max, Pageable paging);
 
     boolean updateFlight(Long id, FlightInfoEntity info);
 
-    Page<FlightInfoEntity> findAllExpNotes(Long id, Pageable paging);
+    List<FlightInfoEntity> findAllExpNotes(Long id, Pageable paging);
 
     void deleteFlightInfo(Long id);
 }

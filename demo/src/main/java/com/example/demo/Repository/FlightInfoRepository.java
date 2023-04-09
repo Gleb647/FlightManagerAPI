@@ -21,7 +21,7 @@ public interface FlightInfoRepository extends PagingAndSortingRepository<FlightI
     @Query(
         value = "SELECT * FROM flight_info u WHERE u.flight_id = :id",
         nativeQuery = true)
-    Page<FlightInfoEntity>  findAllExpNotes(@Param("id") Long id, Pageable pageable);
+    Page<FlightInfoEntity> findAllExpNotes(@Param("id") Long id, Pageable pageable);
 
     @Modifying
     @Transactional

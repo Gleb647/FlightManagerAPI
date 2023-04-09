@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -117,12 +119,15 @@ public class FlightInfoControllerTest {
     @Test
     public void getFlightInfoTest() throws Exception {
         LocalDateTime time = LocalDateTime.of(2023, 03, 18, 12, 00);
-        when(base_serv.findAllExpNotes(1L, null)).thenReturn((Page<FlightInfoEntity>) Arrays.asList(
+        Pageable paging = PageRequest.of(0, 3);
+        when(base_serv.findAllExpNotes(1L, paging)).thenReturn(Arrays.asList(
                 new FlightInfoEntity(1L,"belavia", 1, 100, time, null),
                 new FlightInfoEntity(2L,"lufthansa", 3, 300, time, null)
         ));
         mvc.perform(MockMvcRequestBuilders
                 .get("/flightinfo/get/1")
+                        .param("pageNum", "0")
+                        .param("pageSize", "3")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[0].carrier", is("belavia")))
@@ -139,17 +144,20 @@ public class FlightInfoControllerTest {
     @Test
     public void getFlightBetween() throws Exception {
         LocalDateTime time = LocalDateTime.of(2023, 03, 18, 12, 00);
-        when(base_serv.findFlightInfoBetween(1L, "1", "9", null)).thenReturn(
-                new PageImpl<>(Arrays.asList(
+        Pageable paging = PageRequest.of(0, 3);
+        when(base_serv.findFlightInfoBetween(1L, "1", "9", paging)).thenReturn(
+                Arrays.asList(
                         new FlightInfoEntity(1L,"belavia", 1, 100, time, null),
                         new FlightInfoEntity(2L,"lufthansa", 3, 300, time, null),
                         new FlightInfoEntity(3L,"turkish airlines", 9, 500, time, null)
-                ))
+                )
         );
         mvc.perform(MockMvcRequestBuilders
                         .get("/flightinfo/get-flight-info-between/1")
                         .param("min", "1")
                         .param("max", "9")
+                        .param("pageNum", "0")
+                        .param("pageSize", "3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$.[0].carrier", is("belavia")))
