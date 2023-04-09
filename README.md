@@ -19,7 +19,7 @@ Endpoints:
 | /flightinfo/{id} | add flight info for flight with id=:id |
 | /flightinfo/get/{id} | get flight info for flight |
 | /flightinfo/get-flight-info-between/{id} | get all flight info's between 2 params (minimal flight cost and maximum flight cost) |
-| /flightinfo/delete/{id} | "/flightinfo/delete/{id}" - delete flight info for flight |
+| /flightinfo/delete/{id} | delete flight info for flight |
 | /flightinfo/change/{id} | change flight info for flight |
 	
 	for Ticket:
